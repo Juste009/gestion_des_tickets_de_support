@@ -1,0 +1,182 @@
+/* =========================================================
+   SupportDesk — style.css
+   Palette imposée : #D4634F (accent), #FFFFFF, #000000 uniquement
+   ========================================================= */
+:root {
+  --accent: #D4634F;
+  --accent-dark: #b34e3d;
+  --black: #000000;
+  --white: #ffffff;
+  --gray-line: rgba(0, 0, 0, 0.12);
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+body {
+  font-family: var(--font-body);
+  color: var(--black);
+  background: var(--white);
+}
+h1, h2, h3, .navbar-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+/* ---------- Boutons ---------- */
+.btn-accent {
+  background-color: var(--accent);
+  border: 2px solid var(--accent);
+  color: var(--white);
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.btn-accent:hover,
+.btn-accent:focus {
+  background-color: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+/* ---------- Navbar ---------- */
+.ticket-navbar {
+  background-color: var(--black);
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+.ticket-brand {
+  font-size: 1.3rem;
+  color: var(--white) !important;
+}
+.brand-accent { color: var(--accent); }
+.ticket-navbar .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  margin: 0 0.4rem;
+}
+.ticket-navbar .nav-link:hover,
+.ticket-navbar .nav-link.active {
+  color: var(--white);
+  border-bottom: 2px solid var(--accent);
+}
+/* ---------- Hero ---------- */
+.hero {
+  padding: 5.5rem 0 4.5rem;
+  border-bottom: 1px solid var(--gray-line);
+}
+.hero-eyebrow {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.75rem;
+}
+.hero-title {
+  font-size: 2.6rem;
+  line-height: 1.15;
+  margin-bottom: 1.1rem;
+  max-width: 20ch;
+}
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: rgba(0, 0, 0, 0.7);
+  max-width: 46ch;
+  margin-bottom: 1.8rem;
+}
+.hero-ticket-card {
+  background: var(--black);
+  color: var(--white);
+  border-radius: 10px;
+  padding: 1.6rem;
+  width: 260px;
+  transform: rotate(2deg);
+}
+.badge-status {
+  background: var(--accent);
+  color: var(--white);
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+.ticket-card-id {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  margin: 0.7rem 0 0.2rem;
+}
+.ticket-card-subject { margin-bottom: 0.2rem; }
+.ticket-card-meta {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
+/* ---------- Titres de section ---------- */
+.section-title {
+  font-size: 1.9rem;
+  text-align: center;
+}
+.section-steps,
+.section-categories { padding: 4rem 0; }
+.section-categories { background: #fafafa; }
+/* ---------- Étapes ---------- */
+.step-card {
+  border: 1px solid var(--gray-line);
+  border-radius: 8px;
+  padding: 1.8rem 1.4rem;
+  height: 100%;
+}
+.step-index {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+}
+.step-card h3 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+.step-card p { color: rgba(0, 0, 0, 0.65); margin: 0; }
+/* ---------- Catégories ---------- */
+.category-card {
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  padding: 1.4rem;
+  height: 100%;
+  transition: border-color 0.15s ease;
+}
+.category-card:hover { border-color: var(--black); }
+.category-card h3 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+.category-card p {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+}
+/* ---------- Footer ---------- */
+.site-footer {
+  background: var(--black);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+.site-footer a { color: var(--white); }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+/* Tablette */
+@media (max-width: 991.98px) {
+  .hero { padding: 4rem 0 3rem; text-align: center; }
+  .hero-title { max-width: none; margin-left: auto; margin-right: auto; }
+  .hero-subtitle { margin-left: auto; margin-right: auto; }
+  .ticket-navbar .nav-link.active,
+  .ticket-navbar .nav-link:hover {
+    border-bottom: none;
+    color: var(--accent);
+  }
+}
+
+/* Smartphone */
+@media (max-width: 575.98px) {
+  .hero-title { font-size: 2rem; }
+  .section-title { font-size: 1.5rem; }
+  .btn-accent { width: 100%; }
+  .hero .btn-accent { width: auto; }
+}

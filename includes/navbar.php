@@ -1,0 +1,34 @@
+<?php
+// Détermine la page active pour surligner le bon lien
+$current = basename($_SERVER['PHP_SELF']);
+?>
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top ticket-navbar">
+  <div class="container">
+    <a class="navbar-brand ticket-brand" href="index.php">
+      Support<span class="brand-accent">-ticket</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#mainNav" aria-controls="mainNav"
+      aria-expanded="false" aria-label="Ouvrir la navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item">
+          <a class="nav-link <?= $current === 'index.php' ? 'active' : '' ?>" href="index.php">Accueil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?= $current === 'create-ticket.php' ? 'active' : '' ?>" href="create-ticket.php">Créer un ticket</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?= $current === 'ticket.php' ? 'active' : '' ?>" href="ticket.php">Consulter un ticket</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-accent ms-lg-2" href="admin/index.php">Administration</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
