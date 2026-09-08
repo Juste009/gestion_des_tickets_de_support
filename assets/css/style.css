@@ -180,3 +180,17 @@ h1, h2, h3, .navbar-brand {
   .btn-accent { width: 100%; }
   .hero .btn-accent { width: auto; }
 }
+/* ---------- Sticky footer ---------- */
+html, body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;
+}
+.site-footer {
+  margin-top: auto;
+}
