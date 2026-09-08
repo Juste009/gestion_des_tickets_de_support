@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once "config/database.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -13,21 +13,29 @@ $email = trim($_POST["email"] ?? "");
 $service = trim($_POST["service"] ?? "");
 $sujet = trim($_POST["sujet"] ?? "");
 $categorie = trim($_POST["categorie"] ?? "");
+$categorieAutre = trim($_POST["categorie_autre"] ?? "");
 $priorite = trim($_POST["priorite"] ?? "");
 $description = trim($_POST["description"] ?? "");
 
 $erreurs = [];
+$nomPattern = '/^[A-Za-zÀ-ÿ\s\-\']+$/';
 
 if ($nom === "") {
     $erreurs[] = "Le nom est obligatoire.";
+} elseif (!preg_match($nomPattern, $nom)) {
+    $erreurs[] = "Le nom ne doit contenir que des lettres, espaces, tirets ou apostrophes.";
 }
 
 if ($prenom === "") {
     $erreurs[] = "Le prénom est obligatoire.";
+} elseif (!preg_match($nomPattern, $prenom)) {
+    $erreurs[] = "Le prénom ne doit contenir que des lettres, espaces, tirets ou apostrophes.";
 }
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $erreurs[] = "L'adresse e-mail est invalide.";
+if ($email === "") {
+    $erreurs[] = "L'e-mail est obligatoire.";
+} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/\.[a-zA-Z]{2,}$/', $email)) {
+    $erreurs[] = "L'adresse e-mail n'est pas valide (ex : nom@domaine.com).";
 }
 
 if ($service === "") {
@@ -40,6 +48,12 @@ if ($sujet === "") {
 
 if ($categorie === "") {
     $erreurs[] = "La catégorie est obligatoire.";
+} elseif ($categorie === "Autre") {
+    if ($categorieAutre === "") {
+        $erreurs[] = "Merci de préciser la catégorie.";
+    } else {
+        $categorie = $categorieAutre; // valeur réellement enregistrée en base
+    }
 }
 
 if ($priorite === "") {
@@ -51,13 +65,19 @@ if ($description === "") {
 }
 
 if (!empty($erreurs)) {
-    echo "<h2>Erreurs</h2>";
-
-    foreach ($erreurs as $erreur) {
-        echo "<p>" . htmlspecialchars($erreur) . "</p>";
-    }
-
-    echo '<a href="create-ticket.php">Retour au formulaire</a>';
+    $_SESSION["errors"] = $erreurs;
+    $_SESSION["old"] = [
+        "nom" => $nom,
+        "prenom" => $prenom,
+        "email" => $email,
+        "service" => $service,
+        "sujet" => $sujet,
+        "categorie" => $_POST["categorie"] ?? "", // valeur brute du select, pas la version remplacée
+        "categorie_autre" => $categorieAutre,
+        "priorite" => $priorite,
+        "description" => $description,
+    ];
+    header("Location: create-ticket.php");
     exit;
 }
 
@@ -68,7 +88,6 @@ try {
             (:nom, :prenom, :email, :service, :sujet, :categorie, :priorite, :description, 'Nouveau')";
 
     $stmt = $pdo->prepare($sql);
-
     $stmt->execute([
         ":nom" => $nom,
         ":prenom" => $prenom,
@@ -77,19 +96,19 @@ try {
         ":sujet" => $sujet,
         ":categorie" => $categorie,
         ":priorite" => $priorite,
-        ":description" => $description
+        ":description" => $description,
     ]);
 
     $id = $pdo->lastInsertId();
+    $numeroTicket = "TK-" . str_pad($id, 5, "0", STR_PAD_LEFT);
 
-    $numero_ticket = "TK-" . str_pad($id, 5, "0", STR_PAD_LEFT);
-
-    echo "<h2>Ticket créé avec succès</h2>";
-    echo "<p>Votre numéro de ticket est : <strong>#" . htmlspecialchars($numero_ticket) . "</strong></p>";
-    echo "<p>Statut : <strong>Nouveau</strong></p>";
-    echo '<a href="create-ticket.php">Créer un autre ticket</a>';
+    $_SESSION["ticket_confirme"] = $numeroTicket;
+    header("Location: confirmation.php");
+    exit;
 
 } catch (PDOException $e) {
-    echo "Erreur lors de l'enregistrement du ticket : " . htmlspecialchars($e->getMessage());
+    $_SESSION["errors"] = ["Une erreur est survenue lors de l'enregistrement. Réessaie."];
+    $_SESSION["old"] = $_POST;
+    header("Location: create-ticket.php");
+    exit;
 }
-?>
