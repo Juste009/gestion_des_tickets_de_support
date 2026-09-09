@@ -1,7 +1,7 @@
 # Support-ticket: Plateforme de gestion des tickets de support
 
 ## Présentation
-SupportDesk est une plateforme web permettant aux employés d'une entreprise de signaler
+Support-ticket est une plateforme web permettant aux employés d'une entreprise de signaler
 des problèmes informatiques (ticket de support) et de suivre leur résolution, et permettant
 à un technicien/administrateur de consulter, filtrer, traiter et gérer ces tickets.
 
