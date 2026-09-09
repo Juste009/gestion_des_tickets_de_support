@@ -24,11 +24,16 @@ $statuts = ['Nouveau', 'En cours', 'En attente', 'Résolu', 'Fermé'];
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $sujet = trim($_POST['sujet'] ?? '');
     $categorie = trim($_POST['categorie'] ?? '');
     $categorieAutre = trim($_POST['categorie_autre'] ?? '');
     $priorite = trim($_POST['priorite'] ?? '');
     $statut = trim($_POST['statut'] ?? '');
     $description = trim($_POST['description'] ?? '');
+
+    if ($sujet === '') {
+        $errors[] = "L'objet du ticket est obligatoire.";
+    }
 
     if ($categorie === '') {
         $errors[] = "La catégorie est obligatoire.";
@@ -54,9 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         $stmt = $pdo->prepare(
-            "UPDATE tickets SET categorie = ?, priorite = ?, statut = ?, description = ? WHERE id = ?"
+            "UPDATE tickets SET sujet = ?, categorie = ?, priorite = ?, statut = ?, description = ? WHERE id = ?"
         );
-        $stmt->execute([$categorie, $priorite, $statut, $description, $id]);
+        $stmt->execute([$sujet, $categorie, $priorite, $statut, $description, $id]);
 
         $_SESSION['message'] = "Le ticket #TK-" . str_pad($id, 5, '0', STR_PAD_LEFT) . " a été mis à jour.";
         header('Location: ticket-details.php?id=' . $id);
@@ -64,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // en cas d'erreur, on réaffiche le formulaire avec les valeurs saisies
+    $ticket['sujet'] = $sujet;
     $ticket['categorie'] = $categorie === '' ? ($_POST['categorie'] ?? '') : $categorie;
     $ticket['priorite'] = $priorite;
     $ticket['statut'] = $statut;
@@ -100,11 +106,17 @@ require_once __DIR__ . '/../includes/navbar.php';
 
         <div class="step-card">
             <p class="ticket-card-id mb-3" style="color: var(--black); font-size: 1.2rem;">
-                #TK-<?= str_pad($id, 5, '0', STR_PAD_LEFT) ?> — <?= htmlspecialchars($ticket['sujet']) ?>
+                #TK-<?= str_pad($id, 5, '0', STR_PAD_LEFT) ?>
             </p>
 
             <form method="POST" action="update-ticket.php">
                 <input type="hidden" name="id" value="<?= $id ?>">
+
+                <div class="mb-3">
+                    <label for="sujet" class="form-label">Objet du ticket</label>
+                    <input type="text" class="form-control" id="sujet" name="sujet"
+                           value="<?= htmlspecialchars($ticket['sujet']) ?>" required>
+                </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
