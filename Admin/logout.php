@@ -1,10 +1,5 @@
 <?php
-
-session_start();
-
-$_SESSION = [];
+require_once __DIR__ . '/../config/database.php';
 session_destroy();
-
 header("Location: login.php");
 exit;
-?>

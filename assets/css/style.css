@@ -148,6 +148,7 @@ h1, h2, h3, .navbar-brand {
   font-size: 0.9rem;
   margin: 0;
 }
+
 /* ---------- Footer ---------- */
 .site-footer {
   background: var(--black);
