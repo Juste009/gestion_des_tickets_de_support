@@ -3,6 +3,7 @@ $pageTitle = "Tableau de bord - Support-ticket";
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/navbar.php';
+require_once "auth.php";
 
 $ticketsOuverts = $pdo->query(
     "SELECT COUNT(*) FROM tickets WHERE statut NOT IN ('Résolu', 'Fermé')"

@@ -1,5 +1,6 @@
 <?php
 require_once "../config/database.php";
+require_once "auth.php";
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: tickets.php");
     exit;
