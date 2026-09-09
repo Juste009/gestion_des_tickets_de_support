@@ -102,6 +102,13 @@ unset($_SESSION['errors'], $_SESSION['old']);
                               placeholder="Décrivez votre problème en détail..."
                               required><?= htmlspecialchars($old['description'] ?? '') ?></textarea>
                 </div>
+                <div class="mb-3">
+                    <label for="piece_jointe" class="form-label">Pièce jointe</label>
+                    <input type="file" name="piece_jointe" id="piece_jointe" class="form-control">
+                 <div class="form-text">
+                    Formats acceptés : JPG, JPEG, PNG, PDF — Taille maximale : 2 Mo.
+                </div>
+</div>
 
                 <button type="submit" class="btn btn-accent">Envoyer le ticket</button>
             </form>

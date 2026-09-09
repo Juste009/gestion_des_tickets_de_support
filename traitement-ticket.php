@@ -52,7 +52,7 @@ if ($categorie === "") {
     if ($categorieAutre === "") {
         $erreurs[] = "Merci de préciser la catégorie.";
     } else {
-        $categorie = $categorieAutre; // valeur réellement enregistrée en base
+        $categorie = $categorieAutre;
     }
 }
 
@@ -64,30 +64,86 @@ if ($description === "") {
     $erreurs[] = "La description est obligatoire.";
 }
 
+$nomFichier = null;
+
+if (isset($_FILES["piece_jointe"]) && $_FILES["piece_jointe"]["error"] !== UPLOAD_ERR_NO_FILE) {
+
+    if ($_FILES["piece_jointe"]["error"] !== UPLOAD_ERR_OK) {
+        $erreurs[] = "Une erreur est survenue lors de l'envoi de la pièce jointe.";
+    } else {
+
+        $fichier = $_FILES["piece_jointe"];
+
+        $tailleMax = 2 * 1024 * 1024;
+
+        if ($fichier["size"] > $tailleMax) {
+            $erreurs[] = "La pièce jointe ne doit pas dépasser 2 Mo.";
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $fichier["tmp_name"]);
+        finfo_close($finfo);
+
+        $mimesAutorises = [
+            "image/jpeg" => "jpg",
+            "image/png" => "png",
+            "application/pdf" => "pdf"
+        ];
+
+        if (!isset($mimesAutorises[$mime])) {
+            $erreurs[] = "Format de fichier non autorisé. Formats acceptés : JPG, JPEG, PNG et PDF.";
+        }
+
+        if (empty($erreurs)) {
+
+            $extension = $mimesAutorises[$mime];
+
+            $nomFichier = bin2hex(random_bytes(16)) . "." . $extension;
+
+            $dossierUpload = __DIR__ . "/uploads/";
+
+            if (!is_dir($dossierUpload)) {
+                mkdir($dossierUpload, 0755, true);
+            }
+
+            $cheminFichier = $dossierUpload . $nomFichier;
+
+            if (!move_uploaded_file($fichier["tmp_name"], $cheminFichier)) {
+                $erreurs[] = "Impossible d'enregistrer la pièce jointe.";
+                $nomFichier = null;
+            }
+        }
+    }
+}
+
 if (!empty($erreurs)) {
     $_SESSION["errors"] = $erreurs;
+
     $_SESSION["old"] = [
         "nom" => $nom,
         "prenom" => $prenom,
         "email" => $email,
         "service" => $service,
         "sujet" => $sujet,
-        "categorie" => $_POST["categorie"] ?? "", // valeur brute du select, pas la version remplacée
+        "categorie" => $_POST["categorie"] ?? "",
         "categorie_autre" => $categorieAutre,
         "priorite" => $priorite,
-        "description" => $description,
+        "description" => $description
     ];
+
     header("Location: create-ticket.php");
     exit;
 }
 
 try {
+
     $sql = "INSERT INTO tickets 
-            (nom, prenom, email, service, sujet, categorie, priorite, description, statut)
+            (nom, prenom, email, service, sujet, categorie, priorite, description, statut, piece_jointe)
             VALUES 
-            (:nom, :prenom, :email, :service, :sujet, :categorie, :priorite, :description, 'Nouveau')";
+            (:nom, :prenom, :email, :service, :sujet, :categorie, :priorite, :description, 'Nouveau', :piece_jointe)";
 
     $stmt = $pdo->prepare($sql);
+
     $stmt->execute([
         ":nom" => $nom,
         ":prenom" => $prenom,
@@ -97,18 +153,34 @@ try {
         ":categorie" => $categorie,
         ":priorite" => $priorite,
         ":description" => $description,
+        ":piece_jointe" => $nomFichier
     ]);
 
     $id = $pdo->lastInsertId();
+
     $numeroTicket = "TK-" . str_pad($id, 5, "0", STR_PAD_LEFT);
 
     $_SESSION["ticket_confirme"] = $numeroTicket;
+
     header("Location: confirmation.php");
     exit;
 
 } catch (PDOException $e) {
-    $_SESSION["errors"] = ["Une erreur est survenue lors de l'enregistrement. Réessaie."];
+
+    if ($nomFichier !== null) {
+        $fichierSupprimer = __DIR__ . "/uploads/" . $nomFichier;
+
+        if (file_exists($fichierSupprimer)) {
+            unlink($fichierSupprimer);
+        }
+    }
+
+    $_SESSION["errors"] = [
+        "Une erreur est survenue lors de l'enregistrement. Réessaie."
+    ];
+
     $_SESSION["old"] = $_POST;
+
     header("Location: create-ticket.php");
     exit;
 }
